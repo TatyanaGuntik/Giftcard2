@@ -28,9 +28,6 @@ define([
          * @return {*}
          */
         getMailingAddress: function () {
-            // var shippingMethod = quote.shippingMethod();
-            // console.log(shippingMethod);
-            // console.log(quote.getQuoteId());
             return window.checkoutConfig.payment.checkmo.mailingAddress;
         },
 

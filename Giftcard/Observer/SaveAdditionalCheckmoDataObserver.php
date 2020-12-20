@@ -5,10 +5,8 @@ namespace Vaimo\Giftcard\Observer;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
-use Vaimo\Giftcard\Model\GiftcardFactory;
 use Vaimo\Giftcard\Helper\GenerateGiftCode;
-
-//use Vaimo\AdditionalCheckmoData\Model\ResourceModel\Giftcard\CollectionFactory;
+use Vaimo\Giftcard\Model\GiftcardRepository;
 
 class SaveAdditionalCheckmoDataObserver implements ObserverInterface
 {
@@ -16,36 +14,27 @@ class SaveAdditionalCheckmoDataObserver implements ObserverInterface
     protected $_quoteRepository;
     protected $logger;
     protected $_state;
-
-    protected $giftcard;
     protected $generateGiftCode;
-    protected $collection;
+    protected $giftRepository;
 
     public function __construct(
         \Magento\Webapi\Controller\Rest\InputParamsResolver $inputParamsResolver,
         \Magento\Quote\Model\QuoteRepository $quoteRepository,
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\App\State $state,
-
-        GiftcardFactory $giftcard,
-        GenerateGiftCode $generateGiftCode
-//        CollectionFactory $profileCollection
+        GenerateGiftCode $generateGiftCode,
+        GiftcardRepository $giftRepository
     )
     {
         $this->_inputParamsResolver = $inputParamsResolver;
         $this->_quoteRepository = $quoteRepository;
         $this->logger = $logger;
         $this->_state = $state;
-
-        $this->giftcard = $giftcard;
         $this->generateGiftCode = $generateGiftCode;
-//        $this->collection = $profileCollection;
+        $this->giftRepository = $giftRepository;
     }
 
     public function execute(EventObserver $observer) {
-
-//        $somedata = $this->collection->create();
-//        $df = $somedata->getData();
 
         $inputParams = $this->_inputParamsResolver->resolve();
 
@@ -74,29 +63,10 @@ class SaveAdditionalCheckmoDataObserver implements ObserverInterface
                         }
 
                         $code = $this->generateGiftCode->generateGiftCode($price);
-
                         $data = ['order_id'=> $order_id, 'receiver_mail' => $mail, 'giftcard_code' => $code];
-                        $giftcard = $this->giftcard->create();
-                        $giftcard->setData($data);
-                        $giftcard->save();
+
+                        $this->giftRepository->save($data);
                     }
-
-//                    $paymentData = $inputParam->getData('additional_data');
-//                    $paymentOrder = $observer->getEvent()->getPayment();
-//                    $order = $paymentOrder->getOrder();
-//                    $quote = $this->_quoteRepository->get($order->getQuoteId());
-//                    $paymentQuote = $quote->getPayment();
-//                    $method = $paymentQuote->getMethodInstance()->getCode();
-
-//                if ($method == Checkmo::PAYMENT_METHOD_CHECKMO_CODE) {
-
-//                    if(isset($paymentData['receiver_mail'])){
-//                        $paymentQuote->setData('receiver_mail', $paymentData['receiver_mail']);
-//                        $paymentOrder->setData('receiver_mail', $paymentData['receiver_mail']);
-//                    }
-
-//                }
-
                 }
             }
         }

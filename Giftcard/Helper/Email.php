@@ -27,20 +27,19 @@ class Email extends \Magento\Framework\App\Helper\AbstractHelper
         $this->logger = $context->getLogger();
     }
 
-    public function sendEmail()
+    public function sendEmail($mail, $code, $price)
     {
-//        $name = $mail;
-//        $cardCode = $code;
+        $name = $mail;
+        $cardCode = $code;
+        $giftPrice = $price;
 
         try {
             $this->inlineTranslation->suspend();
             $sender = [
                 'name' => $this->escaper->escapeHtml('Test'),
-                'email' => $this->escaper->escapeHtml('testsender@vaimo.com'),
+                'email' => $this->escaper->escapeHtml('test-sender@gmail.com'),
             ];
-            $transport = $this->transportBuilder
-                ->setTemplateIdentifier('email_to_send_giftcode')
-                ->setTemplateOptions(
+            $transport = $this->transportBuilder->setTemplateIdentifier('email_to_send_giftcode')->setTemplateOptions(
                     [
                         'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
 //                        'area' => \Magento\Framework\App\Area::AREA_BACKEND,
@@ -48,17 +47,17 @@ class Email extends \Magento\Framework\App\Helper\AbstractHelper
                     ]
                 )
                 ->setTemplateVars([
-                    'name'  => "T",
-                    'cardCode' => "T",
-                    'price' => "T"
+                    'name'  => $name,
+                    'cardCode' => $cardCode,
+                    'price' => $giftPrice,
                 ])
                 ->setFrom($sender)
-                ->addTo('tetttt@gmail.com')
+                ->addTo($mail)
                 ->getTransport();
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {
-            $this->logger->debug($e->getMessage());
+//            $this->logger->debug($e->getMessage());
         }
     }
 }

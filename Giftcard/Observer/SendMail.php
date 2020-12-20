@@ -6,15 +6,20 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Vaimo\Giftcard\Helper\Email;
 
+use Vaimo\Giftcard\Model\GiftcardRepository;
+
 class SendMail implements ObserverInterface
 {
     protected $email;
+    protected $repository;
 
     public function __construct(
-        Email $email
+        Email $email,
+        GiftcardRepository $repository
     )
     {
         $this->email = $email;
+        $this->repository = $repository;
     }
 
     public function execute(Observer $observer)
@@ -22,21 +27,21 @@ class SendMail implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $data = $order->getAllItems();
 
-//        $dat = $this->data->getCollection();
-
         foreach ($data as $item) {
             $productType = $item->getProductType();
 
             if ($productType == 'giftcard_product_type') {
-                $this->email->sendEmail();
-//                $giftPrice = $item->getPrice();
-//                $code = $this->generateGiftCode->generateGiftCode($giftPrice);
-//
+
+                $orderId = $order->getId();
+                $giftCardField = $this->repository->getByOrderId($orderId);
+                $giftCardData = $giftCardField[0]->getData();
+                $mail = $giftCardData['receiver_mail'];
+                $code = $giftCardData['giftcard_code'];
+                $price = $item->getPrice();
+
+                $this->email->sendEmail($mail, $code, $price);
+
 //                if ($order->getState() == 'complete') {
-//
-//                    $paymentData = $order->getPayment()->getData();
-//                    $recieverMail = $paymentData['receiver_mail'];
-//                    $this->email->sendEmail();
 //                }
             }
         }

@@ -1,9 +1,11 @@
+<section class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title">GiftCard Data</span>
+    </div>
+    <?php $smth = $this->getGiftData();
+    echo 'Reciever email: ' . $smth[0] . '<br/><br/>';
+    echo 'Giftcard discount code: ' . $smth[1];
+    ?>
+</section>
 
 
-<h2>sfrcers!!!!</h2>
-
-<?php //if ($productType == 'giftcard_product_type') :?>
-
-    <?php $block = $this->getReceiverMail(); var_dump($block); ?>
-
-<?php //endif; ?>
